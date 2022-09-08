@@ -1,0 +1,40 @@
+/// <summary>
+/// 获取亮度
+/// </summary>
+/// <returns>亮度， 0-255</returns>
+public int GetBrightness()
+{
+	Log.WriteIfEnabled(LogCategory.Information, mSource, string.Format("GetBrightness --->>>");
+
+	var vCommand = string.Format(@"#4{0}000");
+	vCommand = vCommand + XORChecksum(vCommand);
+	Log.WriteIfEnabled(LogCategory.Debug, mSource, string.Format("Command:{0}", vCommand));
+
+	int vBrightness = 0;
+	try
+	{
+		mConnection.Send(vCommand);
+
+		Thread.Sleep(150);
+		var vData = GetRespond(500, 8);
+		if ("#".Equals(vData))
+		{
+			Log.WriteIfEnabled(LogCategory.Warning, mSource, "Device response error.");
+			throw new DeviceException("Get Response Error.", DPPMExceptionCode.ERROR_EXECUTE_COMMAND);
+		}
+		
+
+		Log.WriteIfEnabled(LogCategory.Information, mSource, string.Format("Data:{0}", vData));
+
+		vBrightness = Convert.ToInt32(vData.Substring(4, 2),16);
+	}
+	catch (Exception e)
+	{
+		Log.WriteExceptionCatch(mSource, e);
+		throw new DeviceException(e.Message, DPPMExceptionCode.ERROR_EXECUTE_COMMAND);
+	}
+
+	Log.WriteIfEnabled(LogCategory.Information, mSource, string.Format("GetBrightness(Brightness:{0}) --->>>", vBrightness));
+
+	return vBrightness;
+}

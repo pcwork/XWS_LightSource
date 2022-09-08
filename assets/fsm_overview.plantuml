@@ -1,0 +1,52 @@
+@startuml
+title XWS operation FSM
+
+title
+<#lightblue,#red>|=  STATUS  |=  detail  |=  Comments |
+<#lightgreen>|  0  |   IDLE  | ready for operations |
+<#lightgreen>|  1  |   STARTING  | Laser is starting |
+<#lightgreen>|  2  |   IGNITION  | Plasma is triggered |
+<#lightgreen>|  3  |   PLASMA ON  | Plasma is turned ON |
+<#lightgreen>|  4  |   ERROR  |<#Navy><color:OrangeRed><b> N/A|
+end title
+
+  [*] --> InitPort
+  InitPort --> connecting
+  connecting --> connecting : <color:red>Timeout
+  connecting -d-> CheckState :<color:red>Port connected
+  CheckState --> CheckState : <color:red>periodically
+  CheckState --> runcommand : <color:red>Control Request
+  runcommand -u-> CheckState
+  CheckState -u-> connecting : <color:red>ConnFailed
+
+  state runcommand {
+    [*] --> On       : <color:red> "TURN_ON &&\r\n <color:red> STATUS==0"
+    [*] --> Off      : <color:red> "TURN_OFF &&\r\n <color:red> PLASMA_STAT==ON"
+    [*] --> Restart  : <color:red>RESTART
+    [*] --> Poweroff : <color:red>POWEROFF
+    state On {
+       Starting --> Ignition
+       Ignition --> Plasma_On
+    }
+    state Off {
+    }
+  }
+
+  state CheckState {
+
+     [*] -> ReadStatus
+
+     /'
+     state ifopt <<choice>>
+     ifopt -u> connecting  : <color:red>RESTART ||\r <color:red>POWEROFF
+     ifopt -d> ReadStatus  : <color:red>else
+     '/
+
+
+     ReadStatus -d-> Offline      : <color:red>timeout
+     ReadStatus -d-> Idle         : <color:red>ERROR==0 &&\r\n <color:red>STATUS=0
+     ReadStatus -d-> InProcess    : <color:red>ERROR==0 &&\r\n <color:red>STATUS=1,2,3
+     ReadStatus -d-> Error        : <color:red>ERROR!=0 &&\r\n STATUS=4
+  }
+
+@enduml

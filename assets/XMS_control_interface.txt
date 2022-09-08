@@ -1,0 +1,56 @@
+/*
+* namesapce  JCTF.Peripheral.XXX
+* version     
+* author   dgis 
+* description
+* since   20XX/XX/XX  
+* 
+* Copyright (c) 2018 Lir Corporation. All rights reserved.  
+*┌───────────────────────────────────────────────────────┐ 
+*│　此技术信息为本公司机密信息，未经本公司书面同意禁止向第三方披露          │ 
+*│　版权所有：上海鼎格信息科技有限公司　　　　　　　　　　　　　　          │ 
+*└───────────────────────────────────────────────────────┘ 
+*/
+
+/// <summary>
+/// 打开
+/// </summary>
+void Open();
+
+/// <summary>
+/// 关闭
+/// </summary>
+void Close();
+
+/// <summary>
+/// 设置亮度：voltage参照brightness设置转换为0-255
+/// </summary>
+/// <param name="brightness">亮度， 0-255</param>
+void Setbrightness(int brightness);
+
+/// <summary>
+/// 获取亮度
+/// </summary>
+/// <returns>亮度， 0-255</returns>
+int GetBrightness();
+
+/// <summary>
+/// 连接设备
+/// </summary>
+/// <param name="connectstr">connect string</param>
+void ConnectServer(string connectstr);
+
+/// <summary>
+/// 断开连接
+/// </summary>
+void DisconnectServer();
+
+/// <summary>
+/// 获取光源运行时长
+/// </summary>
+double GetUpTime();
+
+/// <summary>
+/// 获取光源温度
+/// </summary>
+double GetTemperature();
